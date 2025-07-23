@@ -1,0 +1,42 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="32" cy="32" r="30" fill="#0F1419" stroke="#00D4FF" stroke-width="2"/>
+  
+  <!-- Tribal Pattern Background -->
+  <path d="M16 20 L20 16 L24 20 L28 16 L32 20 L36 16 L40 20 L44 16 L48 20" stroke="#00D4FF" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M16 44 L20 48 L24 44 L28 48 L32 44 L36 48 L40 44 L44 48 L48 44" stroke="#00D4FF" stroke-width="1" fill="none" opacity="0.3"/>
+  
+  <!-- Feather Crown/Cocar -->
+  <path d="M32 8 L30 14 L28 10 L26 16 L24 12 L22 18 L32 8 Z" fill="#00D4FF"/>
+  <path d="M32 8 L34 14 L36 10 L38 16 L40 12 L42 18 L32 8 Z" fill="#00D4FF"/>
+  <path d="M32 6 L31 12 L32 8 L33 12 L32 6 Z" fill="#FFFFFF"/>
+  
+  <!-- Face/Head -->
+  <circle cx="32" cy="28" r="8" fill="#00D4FF" opacity="0.8"/>
+  
+  <!-- Eyes -->
+  <circle cx="29" cy="26" r="1.5" fill="#0F1419"/>
+  <circle cx="35" cy="26" r="1.5" fill="#0F1419"/>
+  
+  <!-- Nose -->
+  <path d="M32 28 L31 30 L33 30 Z" fill="#0F1419"/>
+  
+  <!-- Mouth -->
+  <path d="M30 32 Q32 34 34 32" stroke="#0F1419" stroke-width="1" fill="none"/>
+  
+  <!-- Tribal Face Paint -->
+  <path d="M26 24 L28 26 L26 28" stroke="#0F1419" stroke-width="2" fill="none"/>
+  <path d="M38 24 L36 26 L38 28" stroke="#0F1419" stroke-width="2" fill="none"/>
+  <path d="M32 22 L32 24" stroke="#0F1419" stroke-width="2"/>
+  
+  <!-- Geometric Tribal Elements -->
+  <path d="M20 32 L24 28 L28 32 L24 36 Z" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.6"/>
+  <path d="M44 32 L40 28 L36 32 L40 36 Z" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Bottom Tribal Pattern -->
+  <path d="M24 42 L28 38 L32 42 L36 38 L40 42" stroke="#00D4FF" stroke-width="1.5" fill="none"/>
+  
+  <!-- Central Diamond -->
+  <path d="M32 36 L28 40 L32 44 L36 40 Z" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+  <circle cx="32" cy="40" r="2" fill="#00D4FF" opacity="0.8"/>
+</svg>

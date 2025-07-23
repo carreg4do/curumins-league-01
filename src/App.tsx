@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext'
 import { useAuth } from './hooks/useAuth'
 import { Navbar } from './components/Navbar'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import { Home } from './pages/Home'
 import { About } from './pages/About'
 import { Dashboard } from './pages/Dashboard'
@@ -13,6 +14,7 @@ import { Profile } from './pages/Profile'
 import { Ranking } from './pages/Ranking'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
+import { AuthCallback } from './pages/AuthCallback'
 import './index.css'
 
 function AppContent() {
@@ -39,13 +41,40 @@ function AppContent() {
         <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
         <Route path="/ranking" element={<Ranking />} />
         
+        {/* Rota de callback de autenticação */}
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        
         {/* Rotas protegidas */}
-        <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/times" element={user ? <Teams /> : <Navigate to="/login" />} />
-        <Route path="/meu-time" element={user ? <MyTeam /> : <Navigate to="/login" />} />
-        <Route path="/jogar" element={user ? <Play /> : <Navigate to="/login" />} />
-        <Route path="/partidas" element={user ? <Matches /> : <Navigate to="/login" />} />
-        <Route path="/perfil" element={user ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/times" element={
+          <ProtectedRoute>
+            <Teams />
+          </ProtectedRoute>
+        } />
+        <Route path="/meu-time" element={
+          <ProtectedRoute>
+            <MyTeam />
+          </ProtectedRoute>
+        } />
+        <Route path="/jogar" element={
+          <ProtectedRoute>
+            <Play />
+          </ProtectedRoute>
+        } />
+        <Route path="/partidas" element={
+          <ProtectedRoute>
+            <Matches />
+          </ProtectedRoute>
+        } />
+        <Route path="/perfil" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   )

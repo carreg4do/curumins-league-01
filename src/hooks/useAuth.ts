@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase, getSiteUrl } from '../lib/supabase'
 import type { User } from '../types'
 
 export function useAuth() {
@@ -186,6 +186,45 @@ export function useAuth() {
     }
   }
 
+  const signInWithMagicLink = async (email: string) => {
+    try {
+      const siteUrl = getSiteUrl()
+      
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?redirect_to=/dashboard`
+        }
+      })
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error: any) {
+      return { data: null, error }
+    }
+  }
+
+  const signUpWithMagicLink = async (email: string, nickname: string) => {
+    try {
+      const siteUrl = getSiteUrl()
+      
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?redirect_to=/dashboard`,
+          data: {
+            nickname
+          }
+        }
+      })
+
+      if (error) throw error
+      return { data, error: null }
+    } catch (error: any) {
+      return { data: null, error }
+    }
+  }
+
   const signOut = async () => {
     try {
       // Usar scope local para evitar erro ERR_ABORTED
@@ -212,6 +251,8 @@ export function useAuth() {
     loading,
     signUp,
     signIn,
+    signInWithMagicLink,
+    signUpWithMagicLink,
     signOut,
     fetchUserProfile
   }

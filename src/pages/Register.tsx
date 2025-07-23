@@ -4,21 +4,18 @@ import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 import { Card } from '../components/Card'
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react'
+import { Mail, User, ArrowLeft, Check } from 'lucide-react'
 
 export function Register() {
   const [formData, setFormData] = useState({
     nickname: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    email: ''
   })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [success, setSuccess] = useState(false)
   
-  const { signUp, user } = useAuth()
+  const { signUpWithMagicLink, user } = useAuth()
   const navigate = useNavigate()
 
   // Redirecionar se já estiver logado
@@ -43,16 +40,6 @@ export function Register() {
       newErrors.email = 'Email inválido'
     }
 
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória'
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres'
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Senhas não coincidem'
-    }
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -64,17 +51,16 @@ export function Register() {
     
     setLoading(true)
 
-    const { error } = await signUp(formData.email, formData.password, formData.nickname)
+    const { error } = await signUpWithMagicLink(formData.email, formData.nickname)
     
     if (error) {
       if (error.message.includes('already registered')) {
         setErrors({ email: 'Este email já está cadastrado' })
       } else {
-        setErrors({ general: 'Erro ao criar conta. Tente novamente.' })
+        setErrors({ general: 'Erro ao enviar link de cadastro. Tente novamente.' })
       }
     } else {
-      // Sucesso - redirecionar para dashboard
-      navigate('/dashboard')
+      setSuccess(true)
     }
     
     setLoading(false)
@@ -88,132 +74,114 @@ export function Register() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 mb-4">
-            <img 
-              src="/curumins-logo.svg" 
-              alt="Curumins League Logo" 
-              className="w-12 h-12"
-            />
-            <span className="text-2xl font-bold text-primary tracking-wider">
-              CURUMINS LEAGUE
-            </span>
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center text-purple-400 hover:text-purple-300 mb-6">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar ao início
+            </Link>
           </div>
-          <p className="text-text-secondary">
-            Crie sua conta e entre na competição
-          </p>
+
+          <Card className="p-6 text-center">
+            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-400" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Conta criada!</h1>
+            <p className="text-gray-400 mb-6">
+              Enviamos um link de ativação para <strong className="text-white">{formData.email}</strong>.
+              Clique no link do email para ativar sua conta e fazer login.
+            </p>
+            <p className="text-sm text-gray-500">
+              Não recebeu o email? Verifique sua caixa de spam ou tente novamente.
+            </p>
+            <Button
+              onClick={() => {
+                setSuccess(false)
+                setFormData({ nickname: '', email: '' })
+              }}
+              variant="outline"
+              className="mt-4"
+            >
+              Enviar novamente
+            </Button>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-flex items-center text-purple-400 hover:text-purple-300 mb-6">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar ao início
+          </Link>
+          <h1 className="text-3xl font-bold text-white mb-2">Criar Conta</h1>
+          <p className="text-gray-400">Junte-se à Curumins League com magic link</p>
         </div>
 
-        <Card>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <h2 className="text-2xl font-bold text-center mb-6 text-primary">
-                CRIAR CONTA
-              </h2>
+              <Input
+                type="text"
+                placeholder="Seu nickname"
+                value={formData.nickname}
+                onChange={(e) => handleInputChange('nickname', e.target.value)}
+                icon={<User className="w-4 h-4" />}
+                required
+              />
+              {errors.nickname && (
+                <p className="text-red-400 text-sm mt-1">{errors.nickname}</p>
+              )}
+            </div>
+
+            <div>
+              <Input
+                type="email"
+                placeholder="Digite seu email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                icon={<Mail className="w-4 h-4" />}
+                required
+              />
+              {errors.email && (
+                <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+              )}
             </div>
 
             {errors.general && (
-              <div className="bg-accent/10 border border-accent rounded-lg p-3">
-                <p className="text-accent text-sm text-center">{errors.general}</p>
+              <div className="text-red-400 text-sm text-center">
+                {errors.general}
               </div>
             )}
 
-            <div className="space-y-4">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Seu nickname"
-                  value={formData.nickname}
-                  onChange={(e) => handleInputChange('nickname', e.target.value)}
-                  error={errors.nickname}
-                  className="pl-12"
-                />
-                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-              </div>
-
-              <div className="relative">
-                <Input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  error={errors.email}
-                  className="pl-12"
-                />
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-              </div>
-
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Sua senha"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  error={errors.password}
-                  className="pl-12 pr-12"
-                />
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-primary transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-
-              <div className="relative">
-                <Input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirme sua senha"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  error={errors.confirmPassword}
-                  className="pl-12 pr-12"
-                />
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-primary transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
             <Button
               type="submit"
-              loading={loading}
-              fullWidth
-              size="lg"
+              className="w-full"
+              disabled={loading}
             >
-              CRIAR CONTA
+              {loading ? 'Enviando link...' : 'Criar conta com magic link'}
             </Button>
-
-            <div className="text-center">
-              <p className="text-text-secondary">
-                Já tem uma conta?{' '}
-                <Link
-                  to="/login"
-                  className="text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  Fazer login
-                </Link>
-              </p>
-            </div>
           </form>
-        </Card>
 
-        <div className="text-center mt-8">
-          <p className="text-text-secondary text-sm">
-            © 2025 Curumins League. Todos os direitos reservados.
-          </p>
-        </div>
+          <div className="mt-6 text-center">
+            <p className="text-gray-400 text-sm mb-4">
+              Você receberá um email com um link seguro para ativar sua conta.
+            </p>
+            <p className="text-gray-400">
+              Já tem uma conta?{' '}
+              <Link to="/login" className="text-purple-400 hover:text-purple-300">
+                Entrar
+              </Link>
+            </p>
+          </div>
+        </Card>
       </div>
     </div>
   )

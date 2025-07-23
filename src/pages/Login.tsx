@@ -4,16 +4,15 @@ import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 import { Card } from '../components/Card'
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react'
+import { Mail, ArrowLeft, Check } from 'lucide-react'
 
 export function Login() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   
-  const { signIn, user } = useAuth()
+  const { signInWithMagicLink, user } = useAuth()
   const navigate = useNavigate()
 
   // Redirecionar se já estiver logado
@@ -27,16 +26,84 @@ export function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess(false)
 
-    const { error } = await signIn(email, password)
+    if (!email.trim()) {
+      setError('Email é obrigatório')
+      setLoading(false)
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Email inválido')
+      setLoading(false)
+      return
+    }
+
+    const { error } = await signInWithMagicLink(email)
     
     if (error) {
-      setError('Email ou senha incorretos')
+      setError('Erro ao enviar link de acesso. Tente novamente.')
     } else {
-      navigate('/dashboard')
+      setSuccess(true)
     }
     
     setLoading(false)
+  }
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          {/* Botão Voltar */}
+          <div className="mb-6">
+            <Link
+              to="/"
+              className="inline-flex items-center space-x-2 text-text-secondary hover:text-primary transition-colors group"
+            >
+              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+              <span>Voltar ao início</span>
+            </Link>
+          </div>
+
+          <Card>
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                <Check className="w-8 h-8 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-primary mb-2">
+                  LINK ENVIADO!
+                </h2>
+                <p className="text-text-secondary mb-4">
+                  Enviamos um link de acesso para <strong className="text-primary">{email}</strong>.
+                  Clique no link do email para acessar sua conta.
+                </p>
+                <p className="text-sm text-text-secondary">
+                  Não recebeu o email? Verifique sua caixa de spam ou tente novamente.
+                </p>
+              </div>
+              <Button
+                onClick={() => {
+                  setSuccess(false)
+                  setEmail('')
+                }}
+                variant="secondary"
+                fullWidth
+              >
+                Enviar novamente
+              </Button>
+            </div>
+          </Card>
+
+          <div className="text-center mt-8">
+            <p className="text-text-secondary text-sm">
+              © 2025 Curumins League. Todos os direitos reservados.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -66,7 +133,7 @@ export function Login() {
             </span>
           </div>
           <p className="text-text-secondary">
-            Entre na sua conta para acessar a plataforma
+            Acesse sua conta com magic link
           </p>
         </div>
 
@@ -88,32 +155,13 @@ export function Login() {
               <div className="relative">
                 <Input
                   type="email"
-                  placeholder="seu@email.com"
+                  placeholder="Digite seu email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="pl-12"
                 />
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-              </div>
-
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Sua senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="pl-12 pr-12"
-                />
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-primary transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
               </div>
             </div>
 
@@ -123,38 +171,13 @@ export function Login() {
               fullWidth
               size="lg"
             >
-              ENTRAR
+              {loading ? 'ENVIANDO LINK...' : 'ENVIAR LINK DE ACESSO'}
             </Button>
 
-            <div className="text-center space-y-4">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-surface-light text-text-secondary">
-                    ou
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                type="button"
-                variant="secondary"
-                fullWidth
-                onClick={() => {
-                  // TODO: Implementar login via Steam
-                  alert('Login via Steam será implementado em breve!')
-                }}
-              >
-                <div className="flex items-center justify-center space-x-2">
-                  <span>🎮</span>
-                  <span>Entrar com Steam</span>
-                </div>
-              </Button>
-            </div>
-
             <div className="text-center">
+              <p className="text-text-secondary text-sm mb-4">
+                Você receberá um email com um link seguro para acessar sua conta.
+              </p>
               <p className="text-text-secondary">
                 Não tem uma conta?{' '}
                 <Link

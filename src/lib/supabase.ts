@@ -15,7 +15,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     // Configuração para evitar erro de logout global
     flowType: 'pkce',
     storage: window.localStorage,
-    storageKey: 'supabase.auth.token'
+    storageKey: 'supabase.auth.token',
+    // Configuração para magic link
+    redirectTo: window.location.origin + '/auth/callback'
   },
   global: {
     headers: {
@@ -23,6 +25,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     }
   }
 })
+
+// Função para obter a URL base correta baseada no ambiente
+export function getSiteUrl(): string {
+  const isProduction = import.meta.env.VITE_APP_ENV === 'production'
+  return isProduction 
+    ? import.meta.env.VITE_SITE_URL_PROD || 'https://www.curuminsleague.com'
+    : import.meta.env.VITE_SITE_URL_DEV || 'http://localhost:5173'
+}
 
 // Tipos para as tabelas do banco
 export interface User {

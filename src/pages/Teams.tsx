@@ -162,7 +162,7 @@ export function Teams() {
     if (searchTerm) {
       filtered = filtered.filter(team =>
         team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        team.region.toLowerCase().includes(searchTerm.toLowerCase())
+        (team.region || '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -179,7 +179,7 @@ export function Teams() {
     return Math.round((wins / total) * 100)
   }
 
-  const regions = ['all', ...Array.from(new Set(teams.map(team => team.region)))]
+  const regions = ['all', ...Array.from(new Set(teams.map(team => team.region || '').filter(Boolean)))]
 
   if (loading || loadingTeams) {
     return (

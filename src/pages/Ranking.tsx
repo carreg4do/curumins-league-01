@@ -9,10 +9,7 @@ import {
   Trophy, 
   Search, 
   Medal, 
-  Target, 
-  TrendingUp,
   Crown,
-  Star,
   Award
 } from 'lucide-react'
 
@@ -361,20 +358,20 @@ export function Ranking() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredPlayers.map((player, index) => (
+                  {filteredPlayers.map((player) => (
                     <tr key={player.id} className="border-b border-border/50 hover:bg-surface/50 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center">
-                          {player.ranking <= 3 ? (
-                            getRankIcon(player.ranking)
+                          {(player.ranking ?? 0) <= 3 ? (
+                            getRankIcon(player.ranking ?? 0)
                           ) : (
-                            <span className="text-text-secondary font-bold">#{player.ranking}</span>
+                            <span className="text-text-secondary font-bold">#{player.ranking ?? 0}</span>
                           )}
                         </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 bg-gradient-to-r ${getRankColor(player.ranking)} rounded-lg flex items-center justify-center`}>
+                          <div className={`w-10 h-10 bg-gradient-to-r ${getRankColor(player.ranking ?? 0)} rounded-lg flex items-center justify-center`}>
                             <span className="text-black font-bold">
                               {player.nickname.charAt(0)}
                             </span>

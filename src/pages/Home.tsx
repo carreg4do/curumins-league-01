@@ -8,13 +8,10 @@ import {
   Target,
   Zap,
   Shield,
-  Star,
-  ArrowRight,
-  Play,
   UserPlus,
   Award,
   Clock,
-  CheckCircle
+  Play
 } from 'lucide-react'
 
 export function Home() {
@@ -291,7 +288,7 @@ export function Home() {
             </Link>
             
             <Link to="/ranking">
-              <Button variant="outline" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold flex items-center gap-2">
+              <Button variant="secondary" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold flex items-center gap-2">
                 <Trophy size={24} />
                 Ver Melhores Jogadores
               </Button>

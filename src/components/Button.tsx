@@ -1,9 +1,9 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react'
+import { type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { clsx } from 'clsx'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode
-  variant?: 'primary' | 'secondary' | 'danger'
+  variant?: 'primary' | 'secondary' | 'danger' | 'outline'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   fullWidth?: boolean
@@ -24,7 +24,8 @@ export function Button({
   const variantClasses = {
     primary: 'bg-primary text-black hover:bg-[#00B4E6] hover:scale-105',
     secondary: 'bg-transparent border border-primary text-primary hover:bg-primary/10 hover:scale-105',
-    danger: 'bg-accent text-white hover:bg-accent/80 hover:scale-105'
+    danger: 'bg-accent text-white hover:bg-accent/80 hover:scale-105',
+    outline: 'bg-transparent border border-primary text-primary hover:bg-primary/10 hover:scale-105'
   }
   
   const sizeClasses = {

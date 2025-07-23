@@ -9,12 +9,10 @@ import type { Match } from '../types'
 import { 
   Gamepad2, 
   Search, 
-  Filter, 
   Trophy, 
   X, 
   Calendar,
   Clock,
-  Users,
   Target,
   TrendingUp,
   TrendingDown

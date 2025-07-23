@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, type ReactNode } from 'react'
 
 // Criamos um contexto vazio por enquanto, pois a lógica de autenticação
 // está sendo gerenciada pelo hook useAuth

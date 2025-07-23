@@ -85,18 +85,33 @@ export function Dashboard() {
         setRecentMatches(matches)
       }
 
-      // Buscar time do usuário
-      if (userProfile?.team_id) {
-        const { data: team, error: teamError } = await supabase
-          .from('teams')
-          .select('*')
-          .eq('id', userProfile.team_id)
+      // Buscar time do usuário através da tabela team_members
+      if (userProfile?.id) {
+        const { data: teamMember, error: teamError } = await supabase
+          .from('team_members')
+          .select(`
+            team_id,
+            teams (
+              id,
+              name,
+              logo_url,
+              captain_id,
+              region,
+              wins,
+              losses,
+              description,
+              members,
+              created_at,
+              updated_at
+            )
+          `)
+          .eq('user_id', userProfile.id)
           .single()
 
         if (teamError) {
           console.error('Erro ao buscar time:', teamError)
-        } else if (team) {
-          setUserTeam(team)
+        } else if (teamMember?.teams && Array.isArray(teamMember.teams) && teamMember.teams.length > 0) {
+          setUserTeam(teamMember.teams[0])
         }
       }
     } catch (error) {

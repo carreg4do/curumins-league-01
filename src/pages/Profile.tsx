@@ -620,7 +620,7 @@ export function Profile() {
                       placeholder="Seu nickname"
                     />
                   ) : (
-                    <p className="text-text-primary font-semibold">{userProfile.nickname}</p>
+                    <p className="text-text-primary font-semibold">{userProfile?.nickname}</p>
                   )}
                 </div>
 
@@ -640,7 +640,7 @@ export function Profile() {
                       ))}
                     </select>
                   ) : (
-                    <p className="text-text-primary">{userProfile.position || 'Não definida'}</p>
+                    <p className="text-text-primary">{userProfile?.position || 'Não definida'}</p>
                   )}
                 </div>
 
@@ -650,7 +650,7 @@ export function Profile() {
                   </label>
                   <div className="flex items-center space-x-2">
                     <Mail size={16} className="text-text-secondary" />
-                    <p className="text-text-secondary">{userProfile.email || user?.email}</p>
+                    <p className="text-text-secondary">{userProfile?.email || user?.email}</p>
                   </div>
                 </div>
 
@@ -660,7 +660,7 @@ export function Profile() {
                   </label>
                   <div className="flex items-center space-x-2">
                     <Calendar size={16} className="text-text-secondary" />
-                    <p className="text-text-secondary">{formatDate(userProfile.created_at)}</p>
+                    <p className="text-text-secondary">{userProfile?.created_at ? formatDate(userProfile.created_at) : 'N/A'}</p>
                   </div>
                 </div>
               </div>
@@ -695,7 +695,7 @@ export function Profile() {
                   <div>
                     <h3 className="font-semibold text-text-primary">Steam Account</h3>
                     <p className="text-sm text-text-secondary">
-                      {userProfile.steam_id ? 'Conectado' : 'Não conectado'}
+                      {userProfile?.steam_id ? 'Conectado' : 'Não conectado'}
                     </p>
                   </div>
                   <Button
@@ -706,7 +706,7 @@ export function Profile() {
                       alert('Funcionalidade de conexão com Steam será implementada em breve!')
                     }}
                   >
-                    {userProfile.steam_id ? 'Desconectar' : 'Conectar'}
+                    {userProfile?.steam_id ? 'Desconectar' : 'Conectar'}
                   </Button>
                 </div>
               </div>
@@ -727,7 +727,8 @@ export function Profile() {
                       onError={(e) => {
                         // Fallback para avatar padrão em caso de erro
                         e.currentTarget.style.display = 'none'
-                        e.currentTarget.nextElementSibling.style.display = 'flex'
+                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement
+                        if (nextElement) nextElement.style.display = 'flex'
                       }}
                     />
                   ) : null}
@@ -735,7 +736,7 @@ export function Profile() {
                     className={`w-full h-full bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center ${avatarUrl ? 'hidden' : 'flex'}`}
                   >
                     <span className="text-black font-bold text-3xl">
-                      {userProfile.nickname.charAt(0).toUpperCase()}
+                      {userProfile?.nickname?.charAt(0).toUpperCase() || 'U'}
                     </span>
                   </div>
                 </div>
@@ -749,11 +750,11 @@ export function Profile() {
                   Alterar Foto
                 </Button>
               </div>
-              <h3 className="text-xl font-bold text-text-primary mb-1">{userProfile.nickname}</h3>
-              <p className="text-text-secondary mb-4">{userProfile.position || 'Jogador'}</p>
+              <h3 className="text-xl font-bold text-text-primary mb-1">{userProfile?.nickname}</h3>
+              <p className="text-text-secondary mb-4">{userProfile?.position || 'Jogador'}</p>
               <div className="flex items-center justify-center space-x-2 text-primary">
                 <Trophy size={16} />
-                <span className="font-semibold">Ranking #{userProfile.ranking || 'N/A'}</span>
+                <span className="font-semibold">Ranking #{userProfile?.ranking || 'N/A'}</span>
               </div>
             </Card>
 
@@ -767,7 +768,7 @@ export function Profile() {
                     <TrendingUp className="text-green-500" size={16} />
                     <span className="text-text-secondary">Vitórias</span>
                   </div>
-                  <span className="font-bold text-green-500">{userProfile.wins}</span>
+                  <span className="font-bold text-green-500">{userProfile?.wins || 0}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -775,7 +776,7 @@ export function Profile() {
                     <Target className="text-red-500" size={16} />
                     <span className="text-text-secondary">Derrotas</span>
                   </div>
-                  <span className="font-bold text-red-500">{userProfile.losses}</span>
+                  <span className="font-bold text-red-500">{userProfile?.losses || 0}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -791,7 +792,7 @@ export function Profile() {
                     <Star className="text-accent" size={16} />
                     <span className="text-text-secondary">K/D Ratio</span>
                   </div>
-                  <span className="font-bold text-accent">{userProfile.kd_ratio?.toFixed(2) || '0.00'}</span>
+                  <span className="font-bold text-accent">{userProfile?.kd_ratio?.toFixed(2) || '0.00'}</span>
                 </div>
               </div>
             </Card>

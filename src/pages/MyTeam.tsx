@@ -20,7 +20,6 @@ import {
   Calendar,
   MapPin,
   Star,
-  Settings,
   LogOut
 } from 'lucide-react'
 
@@ -112,7 +111,7 @@ export function MyTeam() {
       wins: 12,
       losses: 8,
       description: 'Time focado em competições regionais do Norte do Brasil.',
-      logo_url: null,
+      logo_url: undefined,
       created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date().toISOString()
     }
@@ -138,8 +137,8 @@ export function MyTeam() {
         wins: userProfile?.wins || 25,
         losses: userProfile?.losses || 15,
         kd_ratio: userProfile?.kd_ratio || 1.2,
-        steam_id: userProfile?.steam_id || null,
-        avatar_url: userProfile?.avatar_url || null,
+        steam_id: userProfile?.steam_id || undefined,
+        avatar: userProfile?.avatar || undefined,
         created_at: userProfile?.created_at || new Date().toISOString(),
         updated_at: userProfile?.updated_at || new Date().toISOString()
       },
@@ -152,8 +151,8 @@ export function MyTeam() {
         wins: 30,
         losses: 12,
         kd_ratio: 1.5,
-        steam_id: null,
-        avatar_url: null,
+        steam_id: undefined,
+        avatar: undefined,
         created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date().toISOString()
       },
@@ -166,8 +165,8 @@ export function MyTeam() {
         wins: 22,
         losses: 18,
         kd_ratio: 1.1,
-        steam_id: null,
-        avatar_url: null,
+        steam_id: undefined,
+        avatar: undefined,
         created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
         updated_at: new Date().toISOString()
       }
@@ -432,7 +431,7 @@ export function MyTeam() {
                     <div className="flex items-center space-x-2">
                       <p className="text-text-primary font-semibold text-lg">{team.name}</p>
                       {team.captain_id === user?.id && (
-                        <Crown className="text-accent" size={20} title="Você é o capitão" />
+                        <Crown className="text-accent" size={20} />
                       )}
                     </div>
                   )}
@@ -521,7 +520,7 @@ export function MyTeam() {
                         <div className="flex items-center space-x-2">
                           <h3 className="font-semibold text-text-primary">{member.nickname}</h3>
                           {member.id === team.captain_id && (
-                            <Crown className="text-accent" size={16} title="Capitão" />
+                            <Crown className="text-accent" size={16} />
                           )}
                           {member.id === user?.id && (
                             <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">

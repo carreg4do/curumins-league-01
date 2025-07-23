@@ -1,16 +1,22 @@
 // Utilitário para tratamento de erros de rede e autenticação
 
 export class NetworkError extends Error {
-  constructor(message: string, public code?: string) {
+  public code?: string
+  
+  constructor(message: string, code?: string) {
     super(message)
     this.name = 'NetworkError'
+    this.code = code
   }
 }
 
 export class AuthError extends Error {
-  constructor(message: string, public code?: string) {
+  public code?: string
+  
+  constructor(message: string, code?: string) {
     super(message)
     this.name = 'AuthError'
+    this.code = code
   }
 }
 

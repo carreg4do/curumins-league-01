@@ -35,7 +35,7 @@ export function About() {
             </p>
             
             <Link to="/">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2 mx-auto">
+              <Button variant="secondary" className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2 mx-auto">
                 <ArrowLeft size={20} />
                 Voltar ao Início
               </Button>
@@ -257,7 +257,7 @@ export function About() {
             </Link>
             
             <Link to="/ranking">
-              <Button variant="outline" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold flex items-center gap-2">
+              <Button variant="secondary" className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold flex items-center gap-2">
                 <Trophy size={24} />
                 Ver Rankings
               </Button>

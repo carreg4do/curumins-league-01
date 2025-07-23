@@ -4,15 +4,15 @@ import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 import { Card } from '../components/Card'
-import { Mail, ArrowLeft, Check } from 'lucide-react'
+import { Mail, Lock, ArrowLeft } from 'lucide-react'
 
 export function Login() {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
   
-  const { signInWithMagicLink, user } = useAuth()
+  const { signIn, user } = useAuth()
   const navigate = useNavigate()
 
   // Redirecionar se já estiver logado
@@ -26,10 +26,15 @@ export function Login() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setSuccess(false)
 
     if (!email.trim()) {
       setError('Email é obrigatório')
+      setLoading(false)
+      return
+    }
+
+    if (!password.trim()) {
+      setError('Senha é obrigatória')
       setLoading(false)
       return
     }
@@ -40,71 +45,16 @@ export function Login() {
       return
     }
 
-    const { error } = await signInWithMagicLink(email)
+    const { error } = await signIn(email, password)
     
     if (error) {
-      setError('Erro ao enviar link de acesso. Tente novamente.')
-    } else {
-      setSuccess(true)
+      setError('Email ou senha incorretos. Tente novamente.')
     }
     
     setLoading(false)
   }
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          {/* Botão Voltar */}
-          <div className="mb-6">
-            <Link
-              to="/"
-              className="inline-flex items-center space-x-2 text-text-secondary hover:text-primary transition-colors group"
-            >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-              <span>Voltar ao início</span>
-            </Link>
-          </div>
 
-          <Card>
-            <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                <Check className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-primary mb-2">
-                  LINK ENVIADO!
-                </h2>
-                <p className="text-text-secondary mb-4">
-                  Enviamos um link de acesso para <strong className="text-primary">{email}</strong>.
-                  Clique no link do email para acessar sua conta.
-                </p>
-                <p className="text-sm text-text-secondary">
-                  Não recebeu o email? Verifique sua caixa de spam ou tente novamente.
-                </p>
-              </div>
-              <Button
-                onClick={() => {
-                  setSuccess(false)
-                  setEmail('')
-                }}
-                variant="secondary"
-                fullWidth
-              >
-                Enviar novamente
-              </Button>
-            </div>
-          </Card>
-
-          <div className="text-center mt-8">
-            <p className="text-text-secondary text-sm">
-              © 2025 Curumins League. Todos os direitos reservados.
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -133,7 +83,7 @@ export function Login() {
             </span>
           </div>
           <p className="text-text-secondary">
-            Acesse sua conta com magic link
+            Entre na sua conta para acessar a plataforma
           </p>
         </div>
 
@@ -155,13 +105,25 @@ export function Login() {
               <div className="relative">
                 <Input
                   type="email"
-                  placeholder="Digite seu email"
+                  placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="pl-12"
                 />
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
+              </div>
+              
+              <div className="relative">
+                <Input
+                  type="password"
+                  placeholder="Sua senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pl-12"
+                />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
               </div>
             </div>
 
@@ -171,7 +133,7 @@ export function Login() {
               fullWidth
               size="lg"
             >
-              {loading ? 'ENVIANDO LINK...' : 'ENVIAR LINK DE ACESSO'}
+              {loading ? 'ENTRANDO...' : 'ENTRAR'}
             </Button>
 
             <div className="text-center">

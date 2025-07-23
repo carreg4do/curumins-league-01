@@ -131,10 +131,13 @@ export function useAuth() {
 
   const signUp = async (email: string, password: string, nickname: string) => {
     try {
+      const siteUrl = getSiteUrl()
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          emailRedirectTo: `${siteUrl}/auth/callback?redirect_to=/dashboard`,
           data: {
             nickname
           }

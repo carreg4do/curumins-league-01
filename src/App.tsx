@@ -29,10 +29,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="text-text-secondary mt-4">Verificando autenticação...</p>
-        </div>
+        <LoadingSpinner size="lg" />
       </div>
     )
   }
@@ -54,10 +51,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="text-text-secondary mt-4">Verificando autenticação...</p>
-        </div>
+        <LoadingSpinner size="lg" />
       </div>
     )
   }
@@ -75,18 +69,6 @@ function AppContent() {
   const { user, loading } = useAuthContext()
 
   console.log('🖥️ AppContent renderizado:', { hasUser: !!user, loading })
-
-  // Se ainda está carregando, mostra tela de loading
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="lg" />
-          <p className="text-text-secondary mt-4">Verificando autenticação...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-background">

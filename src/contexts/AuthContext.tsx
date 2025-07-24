@@ -96,13 +96,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         console.log('🔄 Iniciando verificação de autenticação...')
         
-        // Timeout de segurança para evitar loading infinito
+        // Verificação rápida se há token no localStorage
+        const hasStoredSession = localStorage.getItem('sb-' + supabase.supabaseUrl.split('//')[1].split('.')[0] + '-auth-token')
+        if (!hasStoredSession) {
+          console.log('🚫 Nenhum token armazenado - finalizando loading rapidamente')
+          if (mounted) {
+            setUser(null)
+            setUserProfile(null)
+            setLoading(false)
+          }
+          return
+        }
+        
+        // Timeout de segurança mais curto para melhor UX
         timeoutId = setTimeout(() => {
           if (mounted) {
             console.log('⏰ Timeout atingido - finalizando loading')
             setLoading(false)
           }
-        }, 3000) // Reduzido para 3 segundos
+        }, 1500) // Reduzido para 1.5 segundos
         
         const { data: { session }, error } = await supabase.auth.getSession()
         
@@ -153,8 +165,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         if (currentUser) {
           console.log('🔍 Buscando perfil do usuário...')
-          await fetchUserProfile(currentUser.id)
-          console.log('✅ Perfil carregado')
+          // Buscar perfil em paralelo com finalização do loading
+          fetchUserProfile(currentUser.id).catch(err => {
+            console.error('❌ Erro ao buscar perfil:', err)
+          })
         } else {
           setUserProfile(null)
         }
@@ -190,13 +204,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           
           if (currentUser && event !== 'TOKEN_REFRESHED') {
             console.log('👤 Carregando perfil após mudança de estado...')
-            await fetchUserProfile(currentUser.id)
+            // Buscar perfil sem bloquear o loading
+            fetchUserProfile(currentUser.id).catch(err => {
+              console.error('❌ Erro ao buscar perfil na mudança de estado:', err)
+            })
           } else if (!currentUser) {
             console.log('🚫 Usuário deslogado - limpando perfil')
             setUserProfile(null)
           }
           
-          // Garantir que o loading seja sempre finalizado
+          // Finalizar loading imediatamente para melhor UX
           if (mounted) {
             console.log('✅ Loading finalizado após mudança de estado')
             setLoading(false)

@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (mounted) {
             setLoading(false)
           }
-        }, 10000)
+        }, 5000)
         
         const { data: { session }, error } = await supabase.auth.getSession()
         
@@ -123,6 +123,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         
         clearTimeout(timeoutId)
+        if (mounted) {
+          setLoading(false)
+        }
         
       } catch (error) {
         if (mounted) {
@@ -151,10 +154,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           } else if (!currentUser) {
             setUserProfile(null)
           }
+          
+          // Garantir que o loading seja sempre finalizado
+          if (mounted) {
+            setLoading(false)
+          }
         } catch (error) {
           if (mounted) {
             setUser(null)
             setUserProfile(null)
+            setLoading(false)
           }
         }
       }

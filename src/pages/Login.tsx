@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 import { Card } from '../components/Card'
@@ -11,21 +11,19 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [loginSuccess, setLoginSuccess] = useState(false)
   
-  const { signIn, user } = useAuth()
+  const { signIn, user, loading: authLoading } = useAuthContext()
   const navigate = useNavigate()
 
-  // Redirecionar se já estiver logado
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard')
-    }
-  }, [user, navigate])
+  // Não fazer redirecionamento automático aqui - deixar o App.tsx gerenciar
+  // O redirecionamento será feito pelo roteamento no App.tsx
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setLoginSuccess(false)
 
     if (!email.trim()) {
       setError('Email é obrigatório')
@@ -45,10 +43,23 @@ export function Login() {
       return
     }
 
-    const { error } = await signIn(email, password)
-    
-    if (error) {
-      setError('Email ou senha incorretos. Tente novamente.')
+    try {
+      const { data, error } = await signIn(email, password)
+      
+      if (error) {
+        setError('Email ou senha incorretos. Tente novamente.')
+        setLoading(false)
+        return
+      }
+
+      if (data?.user) {
+        setLoginSuccess(true)
+        // O redirecionamento será feito automaticamente pelo AuthContext + App.tsx
+        // Não fazer navigate manual aqui para evitar conflitos
+      }
+    } catch (err) {
+      console.error('Erro inesperado no login:', err)
+      setError('Erro inesperado. Tente novamente.')
     }
     
     setLoading(false)
@@ -101,6 +112,12 @@ export function Login() {
               </div>
             )}
 
+            {loginSuccess && (
+              <div className="bg-primary/10 border border-primary rounded-lg p-3">
+                <p className="text-primary text-sm text-center">Login realizado com sucesso! Redirecionando...</p>
+              </div>
+            )}
+
             <div className="space-y-4">
               <div className="relative">
                 <Input
@@ -117,7 +134,7 @@ export function Login() {
               <div className="relative">
                 <Input
                   type="password"
-                  placeholder="Sua senha"
+                  placeholder="sua senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -129,11 +146,26 @@ export function Login() {
 
             <Button
               type="submit"
-              loading={loading}
+              loading={loading || loginSuccess}
               fullWidth
               size="lg"
+              disabled={loading || loginSuccess}
             >
-              {loading ? 'ENTRANDO...' : 'ENTRAR'}
+              {loginSuccess ? 'REDIRECIONANDO...' : loading ? 'ENTRANDO...' : 'ENTRAR'}
+            </Button>
+
+            <div className="text-center text-text-secondary text-sm">
+              OU
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              fullWidth
+              size="lg"
+              className="bg-surface border-border-light hover:bg-surface-light"
+            >
+              🎮 Entrar com Steam
             </Button>
 
             <div className="text-center">

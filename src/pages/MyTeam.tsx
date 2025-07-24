@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
@@ -24,7 +24,7 @@ import {
 } from 'lucide-react'
 
 export function MyTeam() {
-  const { user, userProfile, loading } = useAuth()
+  const { user, userProfile, loading } = useAuthContext()
   const navigate = useNavigate()
   const [team, setTeam] = useState<Team | null>(null)
   const [teamMembers, setTeamMembers] = useState<User[]>([])

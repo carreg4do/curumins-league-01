@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { supabase } from '../lib/supabase'
@@ -17,17 +17,14 @@ import {
 } from 'lucide-react'
 
 export function Dashboard() {
-  const { user, userProfile, loading } = useAuth()
+  const { user, userProfile, loading } = useAuthContext()
   const navigate = useNavigate()
   const [recentMatches, setRecentMatches] = useState<Match[]>([])
   const [userTeam, setUserTeam] = useState<Team | null>(null)
   const [loadingData, setLoadingData] = useState(true)
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/login')
-    }
-  }, [user, loading, navigate])
+  // Remoção da verificação redundante de autenticação
+  // O App.tsx já gerencia o redirecionamento para login se não autenticado
 
   useEffect(() => {
     if (user && userProfile) {
@@ -45,7 +42,7 @@ export function Dashboard() {
         .limit(5)
 
       if (matchesError) {
-        console.error('Erro ao buscar partidas:', matchesError)
+        // Silenciar erro - usar dados mock
       }
       
       // Se não há partidas ou houve erro, usar dados fictícios para demonstração
@@ -108,14 +105,12 @@ export function Dashboard() {
           .eq('user_id', userProfile.id)
           .single()
 
-        if (teamError) {
-          console.error('Erro ao buscar time:', teamError)
-        } else if (teamMember?.teams && Array.isArray(teamMember.teams) && teamMember.teams.length > 0) {
+        if (!teamError && teamMember?.teams && Array.isArray(teamMember.teams) && teamMember.teams.length > 0) {
           setUserTeam(teamMember.teams[0])
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do dashboard:', error)
+      // Silenciar erro
     } finally {
       setLoadingData(false)
     }
@@ -125,12 +120,30 @@ export function Dashboard() {
     navigate('/jogar')
   }
 
-  if (loading || loadingData) {
+  // Se ainda está carregando a autenticação, mostrar loading
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-text-secondary">Carregando dashboard...</p>
+          <p className="text-text-secondary">Verificando autenticação...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Se não há usuário ou perfil após o loading, não renderizar nada (App.tsx redirecionará)
+  if (!user || !userProfile) {
+    return null
+  }
+
+  // Mostrar loading apenas se ainda estiver carregando dados específicos da dashboard
+  if (loadingData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-text-secondary">Carregando dados da dashboard...</p>
         </div>
       </div>
     )

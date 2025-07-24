@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { 
@@ -25,7 +25,7 @@ interface QueueSettings {
 }
 
 export function Play() {
-  const { user, userProfile, loading } = useAuth()
+  const { user, userProfile, loading } = useAuthContext()
   const navigate = useNavigate()
   const [matchmakingStatus, setMatchmakingStatus] = useState<MatchmakingStatus>('idle')
   const [searchTime, setSearchTime] = useState(0)

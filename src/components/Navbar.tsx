@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Button } from './Button'
 import { Menu, X, User, LogOut, Trophy, Users, Gamepad2 } from 'lucide-react'
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { user, userProfile, signOut } = useAuth()
+  const { user, userProfile, signOut } = useAuthContext()
   const location = useLocation()
   const navigate = useNavigate()
 

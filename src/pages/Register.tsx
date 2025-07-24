@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
 import { Card } from '../components/Card'
@@ -14,7 +14,7 @@ export function Register() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   
-  const { signUp, user } = useAuth()
+  const { signUp, user } = useAuthContext()
   const navigate = useNavigate()
 
   // Redirecionar se já estiver logado
@@ -80,101 +80,118 @@ export function Register() {
     setLoading(false)
   }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-    // Limpar erro do campo quando o usuário começar a digitar
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }))
-    }
-  }
+
 
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center text-purple-400 hover:text-purple-300 mb-6">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao início
+        {/* Botão Voltar */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center space-x-2 text-text-secondary hover:text-primary transition-colors group"
+          >
+            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <span>Voltar ao início</span>
           </Link>
-          <h1 className="text-3xl font-bold text-white mb-2">Criar Conta</h1>
-          <p className="text-gray-400">Crie sua conta para acessar a plataforma</p>
         </div>
 
-        <Card className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Input
-                type="text"
-                placeholder="Nome de usuário"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                icon={<User className="w-4 h-4" />}
-                required
-              />
-            </div>
+        <Card>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-primary mb-2">
+              CRIAR CONTA
+            </h1>
+            <p className="text-text-secondary">
+              Crie sua conta para acessar a plataforma
+            </p>
+          </div>
 
-            <div>
-              <Input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                icon={<Mail className="w-4 h-4" />}
-                required
-              />
-            </div>
-
-            <div>
-              <Input
-                type="password"
-                placeholder="Sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                icon={<Lock className="w-4 h-4" />}
-                required
-              />
-            </div>
-
-            <div>
-              <Input
-                type="password"
-                placeholder="Confirme sua senha"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                icon={<Lock className="w-4 h-4" />}
-                required
-              />
-            </div>
-
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="text-red-400 text-sm text-center">
-                {error}
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                <p className="text-red-400 text-sm text-center">{error}</p>
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Criando conta...' : 'Criar conta'}
+            <div className="space-y-4">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="Nome de usuário"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  required
+                  className="pl-12"
+                />
+                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
+              </div>
+              
+              <div className="relative">
+                <Input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="pl-12"
+                />
+                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
+              </div>
+              
+              <div className="relative">
+                <Input
+                  type="password"
+                  placeholder="Sua senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pl-12"
+                />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
+              </div>
+              
+              <div className="relative">
+                <Input
+                  type="password"
+                  placeholder="Confirme sua senha"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="pl-12"
+                />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary" size={20} />
+              </div>
+            </div>
+
+            <Button type="submit" fullWidth loading={loading}>
+              {loading ? 'CRIANDO CONTA...' : 'CRIAR CONTA'}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm mb-4">
+          <div className="mt-8 text-center space-y-4">
+            <p className="text-text-secondary text-sm">
               Você receberá um email com um link seguro para ativar sua conta.
             </p>
-            <p className="text-gray-400">
-              Já tem uma conta?{' '}
-              <Link to="/login" className="text-purple-400 hover:text-purple-300">
+            
+            <div className="flex items-center justify-center space-x-1 text-sm">
+              <span className="text-text-secondary">Já tem uma conta?</span>
+              <Link 
+                to="/login" 
+                className="text-primary hover:text-primary/80 transition-colors font-medium"
+              >
                 Entrar
               </Link>
-            </p>
+            </div>
           </div>
         </Card>
+
+        <div className="text-center mt-8">
+          <p className="text-text-secondary text-sm">
+            © 2025 Curumins League. Todos os direitos reservados.
+          </p>
+        </div>
       </div>
     </div>
   )

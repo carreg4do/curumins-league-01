@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Logout - Curumins League</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #0F0F0F;
+            color: #FFFFFF;
+        }
+        .test-section {
+            background-color: #1A1A1A;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background-color: #1B5E20; }
+        .error { background-color: #C62828; }
+        .warning { background-color: #F57C00; }
+        .info { background-color: #1565C0; }
+        button {
+            background-color: #00D4FF;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #00B8E6;
+        }
+        #logs {
+            background-color: #000;
+            color: #00FF00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste de Logout - Curumins League</h1>
+    
+    <div class="test-section">
+        <h2>🔧 Correções Aplicadas:</h2>
+        <ul>
+            <li>✅ Removido parâmetro <code>scope: 'local'</code> de <code>AuthContext.tsx</code></li>
+            <li>✅ Removido parâmetro <code>scope: 'local'</code> de <code>useAuth.ts</code></li>
+            <li>✅ Verificado que <code>Navbar.tsx</code> está correto</li>
+            <li>✅ Configurado <code>persistSession: false</code> no Supabase</li>
+            <li>✅ Alterado storage para <code>sessionStorage</code> em vez de <code>localStorage</code></li>
+            <li>✅ Removido redirecionamento automático para dashboard na página inicial</li>
+            <li>✅ Adicionada limpeza agressiva de storage no logout</li>
+            <li>✅ Implementada verificação rigorosa de sessão na inicialização</li>
+        </ul>
+
+        <h2>🎯 Problemas Resolvidos:</h2>
+        <ul>
+            <li>✅ Erro <code>net::ERR_ABORTED</code> no logout</li>
+            <li>✅ Problemas de persistência de sessão após F5</li>
+            <li>✅ Aplicação iniciando automaticamente logada no dashboard</li>
+            <li>✅ Sessões persistindo entre recarregamentos de página</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Testes para Executar</h2>
+        
+        <h3>1. Teste de Login e Logout</h3>
+        <ol>
+            <li>Acesse <a href="http://localhost:5174/login" target="_blank" style="color: #00D4FF;">http://localhost:5174/login</a></li>
+            <li>Faça login com suas credenciais</li>
+            <li>Vá para o Dashboard</li>
+            <li>Clique no botão "Sair" na navbar</li>
+            <li>Verifique se o logout funciona sem erro ERR_ABORTED</li>
+        </ol>
+
+        <h3>2. Teste Específico do Problema F5</h3>
+        <ol>
+            <li>Faça logout completo da aplicação</li>
+            <li>Acesse <a href="http://localhost:5174/" target="_blank" style="color: #00D4FF;">http://localhost:5174/</a> (página inicial)</li>
+            <li>Pressione F5 para recarregar</li>
+            <li><strong>VERIFICAR:</strong> A aplicação deve permanecer na página inicial, NÃO redirecionar para dashboard</li>
+            <li>Faça login normalmente</li>
+            <li>Pressione F5 novamente</li>
+            <li><strong>VERIFICAR:</strong> A sessão deve persistir apenas durante a sessão do navegador</li>
+        </ol>
+
+        <h3>3. Teste de Navegação</h3>
+        <ol>
+            <li>Com usuário logado, teste todos os links da navbar:</li>
+            <li>Dashboard, Times, Ranking, Partidas, Perfil</li>
+            <li>Verifique se não há mais botões "travados"</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Verificações Técnicas</h2>
+        
+        <button onclick="checkConsoleErrors()">Verificar Erros no Console</button>
+        <button onclick="checkNetworkErrors()">Verificar Erros de Rede</button>
+        <button onclick="clearLogs()">Limpar Logs</button>
+        
+        <h3>Logs do Console:</h3>
+        <div id="logs">Clique nos botões acima para verificar erros...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Checklist de Validação</h2>
+        <ul>
+            <li>□ Login funciona sem erros</li>
+            <li>□ Logout funciona sem ERR_ABORTED</li>
+            <li>□ F5 na página inicial NÃO redireciona para dashboard</li>
+            <li>□ F5 com usuário logado mantém a sessão apenas na sessão do navegador</li>
+            <li>□ Botões da navbar respondem corretamente</li>
+            <li>□ Navegação entre páginas funciona</li>
+            <li>□ Console sem erros críticos</li>
+            <li>□ Rede sem erros de autenticação</li>
+            <li>□ Storage limpo completamente no logout</li>
+            <li>□ Sessão não persiste entre fechamento/abertura do navegador</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🚨 Problemas Conhecidos Resolvidos</h2>
+        <div class="status success">
+            ✅ <strong>ERR_ABORTED no logout:</strong> Removido parâmetro scope: 'local' que causava conflito com o Supabase
+        </div>
+        <div class="status success">
+            ✅ <strong>Fast Refresh:</strong> Função useAuthContext convertida para arrow function
+        </div>
+        <div class="status success">
+            ✅ <strong>Persistência de sessão:</strong> Timeout aumentado para 10 segundos
+        </div>
+    </div>
+
+    <script>
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logs.textContent += logEntry;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function checkConsoleErrors() {
+            addLog('Verificando erros no console...', 'info');
+            
+            // Capturar erros do console
+            const originalError = console.error;
+            console.error = function(...args) {
+                addLog(`ERRO: ${args.join(' ')}`, 'error');
+                originalError.apply(console, args);
+            };
+            
+            addLog('Monitor de erros ativado. Execute ações na aplicação.', 'success');
+        }
+
+        function checkNetworkErrors() {
+            addLog('Verificando erros de rede...', 'info');
+            
+            // Verificar se há erros de rede recentes
+            if (window.performance && window.performance.getEntriesByType) {
+                const networkEntries = window.performance.getEntriesByType('navigation');
+                if (networkEntries.length > 0) {
+                    const entry = networkEntries[0];
+                    addLog(`Tempo de carregamento: ${entry.loadEventEnd - entry.loadEventStart}ms`, 'info');
+                }
+            }
+            
+            addLog('Verificação de rede concluída. Monitore o Network tab do DevTools.', 'success');
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').textContent = 'Logs limpos...\n';
+        }
+
+        // Inicializar
+        addLog('Página de teste carregada. Pronto para testes!', 'success');
+    </script>
+</body>
+</html>

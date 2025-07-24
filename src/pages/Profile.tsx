@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Card } from '../components/Card'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 
 export function Profile() {
-  const { user, userProfile, loading, fetchUserProfile } = useAuth()
+  const { user, userProfile, loading } = useAuthContext()
   const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({
@@ -154,8 +154,7 @@ export function Profile() {
       if (data) {
         // Atualizar o estado local imediatamente
         setIsEditing(false)
-        // Recarregar o perfil do usuário
-        await fetchUserProfile(user.id)
+        // O perfil será atualizado automaticamente pelo hook useAuth
       }
     } catch (error: any) {
       console.error('Erro ao atualizar perfil:', error || 'Erro desconhecido')
@@ -280,10 +279,7 @@ export function Profile() {
         
         setAvatarUrl(compressedBase64)
         setShowAvatarModal(false)
-        // Aguardar um pouco antes de recarregar o perfil
-        setTimeout(async () => {
-          await fetchUserProfile(user.id)
-        }, 500)
+        // O perfil será atualizado automaticamente pelo hook useAuth
       }
     } catch (error: any) {
       clearTimeout(timeoutId)
@@ -437,10 +433,7 @@ export function Profile() {
         
         setAvatarUrl(processedUrl)
         setShowAvatarModal(false)
-        // Aguardar um pouco antes de recarregar o perfil
-        setTimeout(async () => {
-          await fetchUserProfile(user.id)
-        }, 500)
+        // O perfil será atualizado automaticamente pelo hook useAuth
       }
     } catch (error: any) {
       clearTimeout(timeoutId)
@@ -520,10 +513,8 @@ export function Profile() {
               <Button 
                 variant="secondary" 
                 onClick={() => {
-                  // Tentar recarregar o perfil
-                  if (user) {
-                    fetchUserProfile(user.id)
-                  }
+                  // Recarregar a página para tentar novamente
+                  window.location.reload()
                 }}
               >
                 Tentar Novamente

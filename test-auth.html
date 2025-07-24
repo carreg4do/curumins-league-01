@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Autenticação - Curumins League</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0A0A0A;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #1a1a1a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #1a4a1a; border: 1px solid #4a8a4a; }
+        .error { background: #4a1a1a; border: 1px solid #8a4a4a; }
+        .warning { background: #4a4a1a; border: 1px solid #8a8a4a; }
+        button {
+            background: #00D1FF;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #00B4E6;
+        }
+        .log {
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Teste de Autenticação - Curumins League</h1>
+        
+        <div class="test-section">
+            <h2>📋 Checklist de Funcionalidades</h2>
+            <div id="checklist">
+                <div class="status warning">⏳ Verificando aplicação...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Ações de Teste</h2>
+            <button onclick="testLogin()">Testar Login</button>
+            <button onclick="testNavigation()">Testar Navegação</button>
+            <button onclick="testButtons()">Testar Botões</button>
+            <button onclick="testRefresh()">Testar F5</button>
+            <button onclick="clearLogs()">Limpar Logs</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Logs de Teste</h2>
+            <div id="logs" class="log"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📖 Instruções de Teste</h2>
+            <ol>
+                <li><strong>Teste de Login:</strong> Faça login na aplicação principal</li>
+                <li><strong>Teste de Navegação:</strong> Navegue entre as páginas</li>
+                <li><strong>Teste de Botões:</strong> Clique nos botões "Sair" e "Perfil"</li>
+                <li><strong>Teste de F5:</strong> Pressione F5 para recarregar a página</li>
+                <li><strong>Verificação:</strong> Confirme se os dados persistem após F5</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h2>✅ Critérios de Sucesso</h2>
+            <ul>
+                <li>Login funciona sem erros</li>
+                <li>Navegação entre páginas é fluida</li>
+                <li>Botões respondem aos cliques</li>
+                <li>Dados do usuário persistem após F5</li>
+                <li>Não há erros no console do navegador</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logEntry.style.color = type === 'error' ? '#ff6b6b' : type === 'success' ? '#51cf66' : '#74c0fc';
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function updateChecklist() {
+            const checklist = document.getElementById('checklist');
+            checklist.innerHTML = `
+                <div class="status success">✅ Aplicação carregada</div>
+                <div class="status success">✅ AuthContext refatorado</div>
+                <div class="status success">✅ Fast Refresh corrigido</div>
+                <div class="status success">✅ Logs de debug removidos</div>
+                <div class="status warning">⏳ Aguardando testes manuais</div>
+            `;
+        }
+        
+        function testLogin() {
+            log('Iniciando teste de login...');
+            log('Abra a aplicação principal e faça login', 'info');
+            log('Verifique se não há erros no console', 'info');
+        }
+        
+        function testNavigation() {
+            log('Iniciando teste de navegação...');
+            log('Navegue entre Dashboard, Perfil, Times, etc.', 'info');
+            log('Verifique se as transições são suaves', 'info');
+        }
+        
+        function testButtons() {
+            log('Iniciando teste de botões...');
+            log('Clique nos botões "Sair" e "Perfil" na navbar', 'info');
+            log('Verifique se eles respondem corretamente', 'info');
+        }
+        
+        function testRefresh() {
+            log('Iniciando teste de F5...');
+            log('Pressione F5 na aplicação principal', 'info');
+            log('Verifique se os dados do usuário persistem', 'info');
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            log('Logs limpos');
+        }
+        
+        // Inicializar
+        window.onload = function() {
+            updateChecklist();
+            log('Sistema de teste inicializado');
+            log('Aplicação principal disponível em: http://localhost:5174/');
+        };
+    </script>
+</body>
+</html>

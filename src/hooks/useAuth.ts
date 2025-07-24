@@ -9,125 +9,124 @@ export function useAuth() {
 
   const fetchUserProfile = useCallback(async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // 1. Tenta buscar o perfil do usuário
+      const { data: profile, error: fetchError } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
         .single()
 
-      if (error) {
-        // Se o perfil não existe, criar um novo
-        if (error.code === 'PGRST116') {
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            const { data: newProfile, error: createError } = await supabase
-              .from('users')
-              .insert({
-                id: user.id,
-                nickname: user.user_metadata?.nickname || 'Jogador',
-                email: user.email,
-                wins: 0,
-                losses: 0,
-                kd_ratio: 0.0,
-                ranking: 1000,
-                kills: 0,
-                deaths: 0,
-                assists: 0,
-                headshots: 0
-              })
-              .select()
-              .single()
+      // 2. Se o perfil existir, atualiza o estado e encerra
+      if (profile) {
+        setUserProfile(profile)
+        return profile
+      }
 
-            if (createError) {
-              console.error('Erro ao criar perfil:', createError)
-              // Se falhar ao criar, usar perfil padrão para não travar a aplicação
-              setUserProfile({
-                id: user.id,
-                nickname: user.user_metadata?.nickname || 'Jogador',
-                email: user.email || '',
-                wins: 0,
-                losses: 0,
-                kd_ratio: 0.0,
-                ranking: 1000,
-                kills: 0,
-                deaths: 0,
-                assists: 0,
-                headshots: 0,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              })
-              return
-            }
-
-            setUserProfile(newProfile)
-          }
-        } else {
-          console.error('Erro ao buscar perfil do usuário:', error)
-          // Criar perfil padrão em caso de erro
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            setUserProfile({
-              id: user.id,
-              nickname: user.user_metadata?.nickname || 'Jogador',
-              email: user.email || '',
-              wins: 0,
-              losses: 0,
-              kd_ratio: 0.0,
-              ranking: 1000,
-              kills: 0,
-              deaths: 0,
-              assists: 0,
-              headshots: 0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-          }
+      // 3. Se o perfil não for encontrado (PGRST116), tenta criar um novo
+      if (fetchError && fetchError.code === 'PGRST116') {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          setUserProfile(null)
+          return null
         }
-        return
+
+        const { data: newProfile, error: createError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            nickname: user.user_metadata?.nickname || 'Jogador',
+            email: user.email,
+            wins: 0,
+            losses: 0,
+            kd_ratio: 0.0,
+            ranking: 1000,
+            kills: 0,
+            deaths: 0,
+            assists: 0,
+            headshots: 0
+          })
+          .select()
+          .single()
+
+        if (createError) {
+          console.error('Erro ao criar perfil de usuário:', createError)
+          setUserProfile(null)
+          return null
+        }
+
+        setUserProfile(newProfile)
+        return newProfile
       }
 
-      if (data) {
-        setUserProfile(data)
+      // 4. Se ocorrer qualquer outro erro na busca, loga e define o perfil como nulo
+      if (fetchError) {
+        console.error('Erro ao buscar perfil do usuário:', fetchError)
       }
-    } catch (error) {
-      console.error('Erro ao buscar perfil:', error)
-      // Em caso de erro, não deixar a aplicação travada
+
       setUserProfile(null)
+      return null
+    } catch (error) {
+      console.error('Erro inesperado em fetchUserProfile:', error)
+      setUserProfile(null)
+      return null
     }
   }, [])
 
   useEffect(() => {
-    // Verificar se há um usuário logado
+    let mounted = true
+    
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        await fetchUserProfile(session.user.id)
+      try {
+        setLoading(true)
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!mounted) return
+        
+        setUser(session?.user ?? null)
+        if (session?.user) {
+          await fetchUserProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error('Erro ao obter sessão:', error)
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
       }
-      
-      setLoading(false)
     }
 
     getSession()
 
-    // Escutar mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        setUser(session?.user ?? null)
+      async (event, session) => {
+        console.log('Auth state changed:', event)
         
-        if (session?.user) {
-          await fetchUserProfile(session.user.id)
-        } else {
-          setUserProfile(null)
+        if (!mounted) return
+        
+        try {
+          setLoading(true)
+          setUser(session?.user ?? null)
+          
+          if (session?.user) {
+            await fetchUserProfile(session.user.id)
+          } else {
+            setUserProfile(null)
+          }
+        } catch (error) {
+          console.error('Erro no auth state change:', error)
+        } finally {
+          if (mounted) {
+            setLoading(false)
+          }
         }
-        
-        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
-  }, [fetchUserProfile])
+    return () => {
+      mounted = false
+      subscription?.unsubscribe()
+    }
+  }, [])
 
   const signUp = async (email: string, password: string, nickname: string) => {
     try {
@@ -230,8 +229,7 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
-      // Usar scope local para evitar erro ERR_ABORTED
-      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      const { error } = await supabase.auth.signOut()
       if (error) throw error
       
       // Limpar estado local
@@ -256,7 +254,6 @@ export function useAuth() {
     signIn,
     signInWithMagicLink,
     signUpWithMagicLink,
-    signOut,
-    fetchUserProfile
+    signOut
   }
 }

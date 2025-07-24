@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../contexts/AuthContext'
 import { Card } from '../components/Card'
 import { Input } from '../components/Input'
 import { supabase } from '../lib/supabase'
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 
 export function Ranking() {
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuthContext()
   const navigate = useNavigate()
   const [players, setPlayers] = useState<User[]>([])
   const [filteredPlayers, setFilteredPlayers] = useState<User[]>([])

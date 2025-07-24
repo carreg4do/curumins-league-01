@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 import { supabase, getSiteUrl } from '../lib/supabase'
 import type { User } from '../types'
 
+// Obter URL do Supabase para construir chave do localStorage
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://hwgoiwobkmcwdvyeefoj.supabase.co'
+
 interface AuthContextType {
   user: any
   userProfile: User | null
@@ -97,7 +100,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.log('🔄 Iniciando verificação de autenticação...')
         
         // Verificação rápida se há token no localStorage
-        const hasStoredSession = localStorage.getItem('sb-' + supabase.supabaseUrl.split('//')[1].split('.')[0] + '-auth-token')
+        const hasStoredSession = localStorage.getItem('sb-' + SUPABASE_URL.split('//')[1].split('.')[0] + '-auth-token')
         if (!hasStoredSession) {
           console.log('🚫 Nenhum token armazenado - finalizando loading rapidamente')
           if (mounted) {
@@ -336,7 +339,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
+      // Usar logout local para evitar erro ERR_ABORTED
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
       if (error) throw error
       
       // Limpar estados locais

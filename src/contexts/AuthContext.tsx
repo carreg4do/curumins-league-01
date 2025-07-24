@@ -91,13 +91,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }
         }, 10000)
         
-        // Limpar qualquer sessão antiga primeiro
-        sessionStorage.clear()
-        const keysToRemove = Object.keys(localStorage).filter(key => 
-          key.includes('supabase') || key.includes('auth')
-        )
-        keysToRemove.forEach(key => localStorage.removeItem(key))
-        
         const { data: { session }, error } = await supabase.auth.getSession()
         
         if (error || !mounted || !session) {

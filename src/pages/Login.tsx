@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuthContext } from '../contexts/AuthContext'
 import { Button } from '../components/Button'
 import { Input } from '../components/Input'
@@ -13,8 +13,7 @@ export function Login() {
   const [error, setError] = useState('')
   const [loginSuccess, setLoginSuccess] = useState(false)
   
-  const { signIn, user, loading: authLoading } = useAuthContext()
-  const navigate = useNavigate()
+  const { signIn } = useAuthContext()
 
   // Não fazer redirecionamento automático aqui - deixar o App.tsx gerenciar
   // O redirecionamento será feito pelo roteamento no App.tsx

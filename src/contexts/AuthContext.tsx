@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('🔍 Buscando perfil para usuário:', userId)
+      
       const { data: profile, error: fetchError } = await supabase
         .from('users')
         .select('*')
@@ -33,13 +35,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .single()
 
       if (profile) {
+        console.log('✅ Perfil encontrado:', profile.nickname)
         setUserProfile(profile)
         return profile
       }
 
       if (fetchError && fetchError.code === 'PGRST116') {
+        console.log('📝 Perfil não encontrado, criando novo...')
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
+          console.log('❌ Usuário não encontrado para criar perfil')
           setUserProfile(null)
           return null
         }
@@ -63,17 +68,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           .single()
 
         if (createError) {
+          console.error('❌ Erro ao criar perfil:', createError)
           setUserProfile(null)
           return null
         }
 
+        console.log('✅ Novo perfil criado:', newProfile.nickname)
         setUserProfile(newProfile)
         return newProfile
       }
 
+      console.error('❌ Erro ao buscar perfil:', fetchError)
       setUserProfile(null)
       return null
     } catch (error) {
+      console.error('❌ Erro inesperado ao buscar perfil:', error)
       setUserProfile(null)
       return null
     }
@@ -85,18 +94,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     
     const initializeAuth = async () => {
       try {
+        console.log('🔄 Iniciando verificação de autenticação...')
+        
+        // Timeout de segurança para evitar loading infinito
         timeoutId = setTimeout(() => {
           if (mounted) {
+            console.log('⏰ Timeout atingido - finalizando loading')
             setLoading(false)
           }
-        }, 5000)
+        }, 3000) // Reduzido para 3 segundos
         
         const { data: { session }, error } = await supabase.auth.getSession()
         
-        if (error || !mounted || !session) {
+        console.log('📋 Sessão obtida:', { 
+          hasSession: !!session, 
+          hasUser: !!session?.user,
+          error: error?.message 
+        })
+        
+        if (error) {
+          console.error('❌ Erro ao obter sessão:', error)
           if (mounted) {
             setUser(null)
             setUserProfile(null)
+            clearTimeout(timeoutId)
+            setLoading(false)
+          }
+          return
+        }
+        
+        if (!session) {
+          console.log('🚫 Nenhuma sessão encontrada')
+          if (mounted) {
+            setUser(null)
+            setUserProfile(null)
+            clearTimeout(timeoutId)
             setLoading(false)
           }
           return
@@ -105,35 +137,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         // Verificar se a sessão é válida e não expirou
         const now = Math.floor(Date.now() / 1000)
         if (session.expires_at && session.expires_at < now) {
+          console.log('⏰ Sessão expirada')
           if (mounted) {
             setUser(null)
             setUserProfile(null)
+            clearTimeout(timeoutId)
             setLoading(false)
           }
           return
         }
         
         const currentUser = session?.user ?? null
+        console.log('👤 Usuário encontrado:', { id: currentUser?.id, email: currentUser?.email })
         setUser(currentUser)
         
         if (currentUser) {
+          console.log('🔍 Buscando perfil do usuário...')
           await fetchUserProfile(currentUser.id)
+          console.log('✅ Perfil carregado')
         } else {
           setUserProfile(null)
         }
         
         clearTimeout(timeoutId)
         if (mounted) {
+          console.log('✅ Autenticação inicializada com sucesso')
           setLoading(false)
         }
         
       } catch (error) {
+        console.error('❌ Erro na inicialização da autenticação:', error)
         if (mounted) {
           setUser(null)
           setUserProfile(null)
-        }
-      } finally {
-        if (mounted) {
+          clearTimeout(timeoutId)
           setLoading(false)
         }
       }
@@ -145,21 +182,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       async (event, session) => {
         if (!mounted) return
         
+        console.log('🔄 Mudança de estado de autenticação:', { event, hasSession: !!session })
+        
         try {
           const currentUser = session?.user ?? null
           setUser(currentUser)
           
           if (currentUser && event !== 'TOKEN_REFRESHED') {
+            console.log('👤 Carregando perfil após mudança de estado...')
             await fetchUserProfile(currentUser.id)
           } else if (!currentUser) {
+            console.log('🚫 Usuário deslogado - limpando perfil')
             setUserProfile(null)
           }
           
           // Garantir que o loading seja sempre finalizado
           if (mounted) {
+            console.log('✅ Loading finalizado após mudança de estado')
             setLoading(false)
           }
         } catch (error) {
+          console.error('❌ Erro na mudança de estado:', error)
           if (mounted) {
             setUser(null)
             setUserProfile(null)
